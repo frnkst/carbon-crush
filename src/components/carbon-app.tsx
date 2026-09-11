@@ -394,7 +394,7 @@ function Brand() {
       <span className="grid size-8 place-items-center rounded-full bg-primary text-white">
         <Leaf className="size-4" />
       </span>
-      wurzel
+      CarbonCrush
     </div>
   );
 }

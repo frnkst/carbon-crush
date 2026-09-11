@@ -112,7 +112,7 @@ export function useCarbonState() {
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement("a");
     anchor.href = url;
-    anchor.download = "wurzel-klimadaten.json";
+    anchor.download = "carboncrush-klimadaten.json";
     anchor.click();
     URL.revokeObjectURL(url);
   }

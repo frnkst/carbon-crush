@@ -13,7 +13,7 @@ const displayFont = Fraunces({
 });
 
 export const metadata: Metadata = {
-  title: "Wurzel — Dein Klima-Coach",
+  title: "CarbonCrush — Dein Klima-Coach",
   description:
     "Ein interaktiver Prototyp für kleine Schritte mit spürbarer Klimawirkung.",
 };

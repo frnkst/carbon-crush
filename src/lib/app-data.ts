@@ -44,7 +44,7 @@ export type Lesson = {
   minutes: number;
   xp: number;
   icon: string;
-  intro: string;
+  body: string[];
   fact: string;
   action: string;
 };
@@ -68,10 +68,10 @@ export const questions: Question[] = [
     title: "Wie bewegst du dich meistens?",
     note: "Wähle das Verkehrsmittel, das deinen Alltag am besten beschreibt.",
     choices: [
-      { value: "car", label: "Auto", detail: "Meistens allein", icon: "🚗" },
+      { value: "car", label: "Auto", icon: "🚗" },
       { value: "transit", label: "Öffentlicher Verkehr", detail: "Zug, Tram oder Bus", icon: "🚆" },
-      { value: "bike", label: "Velo", detail: "Mit Muskelkraft", icon: "🚲" },
-      { value: "walk", label: "Zu Fuss", detail: "Kurze Wege", icon: "🚶" },
+      { value: "bike", label: "Velo", icon: "🚲" },
+      { value: "walk", label: "Zu Fuss", icon: "🚶" },
     ],
   },
   {
@@ -104,9 +104,9 @@ export const questions: Question[] = [
     title: "Wie viele Kilometer fährst du pro Jahr?",
     note: "Eine grobe Einschätzung reicht vollkommen.",
     choices: [
-      { value: "0", label: "Fast keine", detail: "0–1’000 km", icon: "🍃" },
+      { value: "0", label: "Wenige", detail: "0–1’000 km", icon: "🍃" },
       { value: "5000", label: "Gelegentlich", detail: "ca. 5’000 km", icon: "🛣️" },
-      { value: "10000", label: "Regelmässig", detail: "ca. 10’000 km", icon: "🛣️" },
+      { value: "10000", label: "Regelmässig", detail: "ca. 10’000 km", icon: "🚘" },
       { value: "18000", label: "Sehr viel", detail: "15’000+ km", icon: "🧭" },
     ],
   },
@@ -119,7 +119,8 @@ export const questions: Question[] = [
       { value: "home", label: "Meist Homeoffice", icon: "🏡" },
       { value: "short", label: "Unter 5 km", icon: "📌" },
       { value: "medium", label: "5–20 km", icon: "🧭" },
-      { value: "long", label: "Mehr als 20 km", icon: "🗺️" },
+      { value: "long", label: "20–50 km", icon: "🗺️" },
+      { value: "very-long", label: "Mehr als 50 km", icon: "🧳" },
     ],
   },
   {
@@ -190,8 +191,8 @@ export const questions: Question[] = [
     choices: [
       { value: "flat-small", label: "Wohnung, kompakt", detail: "unter 60 m²", icon: "🏢" },
       { value: "flat-large", label: "Wohnung, grosszügig", detail: "60 m² oder mehr", icon: "🏙️" },
-      { value: "house-shared", label: "Haus, mehrere Personen", icon: "🏘️" },
       { value: "house", label: "Haus, 1–2 Personen", icon: "🏠" },
+      { value: "house-shared", label: "Haus, mehr als 2 Personen", icon: "🏘️" },
     ],
   },
   {
@@ -200,9 +201,11 @@ export const questions: Question[] = [
     title: "Womit wird dein Zuhause geheizt?",
     note: "Mieter:innen erhalten später nur realistisch beeinflussbare Tipps.",
     choices: [
-      { value: "heatpump", label: "Wärmepumpe / erneuerbar", icon: "♻️" },
+      { value: "heatpump", label: "Wärmepumpe / Erdsonde", icon: "♻️" },
       { value: "district", label: "Fernwärme", icon: "🏭" },
-      { value: "gas", label: "Gas oder Öl", icon: "🔥" },
+      { value: "gas", label: "Gas", icon: "🔥" },
+      { value: "oil", label: "Öl", icon: "🛢️" },
+      { value: "other", label: "Andere Heizung (Elektro/Holz)", icon: "🪵" },
       { value: "unknown", label: "Weiss ich nicht", icon: "❔" },
     ],
   },
@@ -212,10 +215,10 @@ export const questions: Question[] = [
     title: "Wo möchtest du zuerst etwas bewegen?",
     note: "Das verändert nicht deine Bilanz, sondern deine Empfehlungen.",
     choices: [
-      { value: "mobility", label: "Clever unterwegs sein", icon: "🚲" },
-      { value: "food", label: "Bewusster essen", icon: "🥦" },
-      { value: "home", label: "Energie sparen", icon: "💡" },
-      { value: "consumption", label: "Weniger neu kaufen", icon: "🧵" },
+      { value: "mobility", label: "Clever unterwegs sein", detail: "Mobilität & Reisen", icon: "🚲" },
+      { value: "food", label: "Bewusster essen", detail: "Ernährung", icon: "🥦" },
+      { value: "home", label: "Energie clever nutzen", detail: "Wohnen & Heizen", icon: "💡" },
+      { value: "consumption", label: "Bewusster konsumieren", detail: "Einkaufen & Produkte", icon: "🧵" },
     ],
   },
 ];
@@ -279,7 +282,7 @@ export const challenges: Challenge[] = [
   },
   {
     id: "flight-pause",
-    title: "Ein Jahr nah reisen",
+    title: "Ein Jahr klimaneutral reisen",
     short: "Setze dir ein persönliches Jahr ohne Flugreise.",
     category: "Flüge",
     impact: "Sehr hoch",
@@ -396,88 +399,136 @@ export const lessons: Lesson[] = [
     id: "co2e",
     title: "Was bedeutet CO₂e?",
     category: "Konsum",
-    minutes: 2,
+    minutes: 5,
     xp: 10,
     icon: "☁️",
-    intro: "CO₂e macht verschiedene Treibhausgase in einer gemeinsamen Einheit vergleichbar.",
-    fact: "Methan wirkt kurzfristig deutlich stärker als CO₂. Darum wird seine Wirkung in CO₂-Äquivalente umgerechnet.",
+    body: [
+      "Unser Alltag verursacht nicht nur Kohlendioxid, sondern auch andere Treibhausgase. Dazu gehören beispielsweise Methan und Lachgas.",
+      "Diese Gase erwärmen die Atmosphäre unterschiedlich stark und bleiben unterschiedlich lange wirksam. Ein Kilogramm Methan hat deshalb nicht dieselbe Klimawirkung wie ein Kilogramm Kohlendioxid.",
+      "CO₂-Äquivalente, kurz CO₂e, übersetzen diese unterschiedlichen Wirkungen in eine gemeinsame Vergleichseinheit. Dafür wird jedes Gas entsprechend seiner Klimawirkung in eine vergleichbare Menge CO₂ umgerechnet.",
+      "So lassen sich Autofahrten, Lebensmittel, Heizenergie oder Flugreisen trotz verschiedener Emissionsarten miteinander vergleichen. Das Ergebnis ist trotzdem eine Schätzung und kein direkt gemessener Wert.",
+      "Emissionsfaktoren hängen von Produktion, Technik, Region und Zeitraum ab. Deshalb zeigt CarbonCrush bewusst Spannbreiten und konzentriert sich auf belastbare Grössenordnungen.",
+    ],
+    fact: "CO₂e ist eine gemeinsame Vergleichseinheit für unterschiedliche Treibhausgase. Sie macht Klimawirkungen vergleichbar, ohne eine Messgenauigkeit vorzutäuschen.",
     action: "Achte auf Grössenordnungen statt auf scheinbar exakte Nachkommastellen.",
   },
   {
     id: "big-levers",
     title: "Grosse Hebel erkennen",
     category: "Flüge",
-    minutes: 2,
+    minutes: 6,
     xp: 10,
     icon: "🧭",
-    intro: "Nicht jede gute Handlung hat dieselbe Klimawirkung.",
-    fact: "Eine vermiedene Flugreise kann mehr bewirken als viele kleine Alltagsaktionen zusammen.",
+    body: [
+      "Klimafreundliche Handlungen unterscheiden sich deutlich in ihrer Wirkung. Eine wiederverwendbare Tasche und eine vermiedene Fernreise sind beide sinnvoll, aber nicht gleich gross.",
+      "Grosse Hebel entstehen dort, wo eine Aktivität besonders emissionsintensiv ist oder sehr häufig stattfindet. Bei vielen Menschen sind das Flüge, Autofahrten, Heizen oder eine fleischreiche Ernährung.",
+      "Welche Hebel persönlich am wichtigsten sind, hängt vom eigenen Alltag ab. Wer nie fliegt, muss sich nicht auf Flugreisen konzentrieren.",
+      "Kleine Schritte sind wertvoll, wenn sie den Einstieg erleichtern und zu stabilen Gewohnheiten werden. Sie sollten aber grosse Emissionsquellen nicht unsichtbar machen oder rechnerisch beschönigen.",
+      "Der wirksamste Plan kombiniert einen grossen langfristigen Hebel mit einfachen Handlungen für den Alltag. CarbonCrush vergleicht dich deshalb zuerst mit deinem eigenen Ausgangspunkt statt mit anderen Menschen.",
+    ],
+    fact: "Konzentriere dich zuerst auf Aktivitäten, die häufig stattfinden oder besonders emissionsintensiv sind. Kleine Schritte unterstützen dabei, ersetzen aber keine grossen Hebel.",
     action: "Beginne bei einem deiner drei persönlichen Hebel.",
   },
   {
     id: "train",
     title: "Warum Bahn oft gewinnt",
     category: "Mobilität",
-    minutes: 3,
+    minutes: 6,
     xp: 10,
     icon: "🚆",
-    intro: "Gut ausgelastete Züge bewegen viele Menschen mit vergleichsweise wenig Energie.",
-    fact: "Der Unterschied zum Auto wächst, wenn dort nur eine Person sitzt.",
+    body: [
+      "Züge können viele Personen gleichzeitig mit vergleichsweise wenig Energie transportieren. Besonders elektrifizierte und gut ausgelastete Verbindungen schneiden pro Person oft günstig ab.",
+      "Beim Auto werden Fahrzeuggewicht und Energiebedarf häufig nur einer Person zugerechnet. Mit jeder zusätzlichen mitfahrenden Person verteilt sich die Wirkung auf mehr Menschen.",
+      "Auch die Art des Zugstroms und der Fahrzeugantrieb beeinflussen den Vergleich. Trotzdem bleibt die Bahn auf vielen mittleren und langen Strecken eine starke Alternative.",
+      "Der Zugang zum Bahnhof und die letzte Etappe gehören ebenfalls zur Reise. Velo, Tram und Bus können diese Lücken klimafreundlich schliessen.",
+      "Nicht jede Strecke lässt sich sinnvoll mit dem Zug zurücklegen. Entscheidend ist, regelmässige und gut ersetzbare Fahrten zuerst zu erkennen und praktisch zu planen.",
+    ],
+    fact: "Gut ausgelastete, elektrische Züge verursachen pro Person meist deutlich weniger Emissionen als eine Autofahrt allein. Der konkrete Vorteil hängt von Strecke, Auslastung und Strommix ab.",
     action: "Speichere einen regelmässigen Weg, den du mit ÖV testen willst.",
   },
   {
     id: "electric-car",
     title: "E-Auto: besser, nicht gratis",
     category: "Mobilität",
-    minutes: 3,
+    minutes: 6,
     xp: 10,
     icon: "⚡",
-    intro: "Elektroautos verursachen im Betrieb meist weniger Emissionen, brauchen aber weiterhin Energie und Material.",
-    fact: "Fahrzeuggrösse, Strommix und gefahrene Kilometer bleiben relevant.",
+    body: [
+      "Elektroautos verursachen während der Fahrt keine direkten Abgase. Ihre Klimawirkung entsteht dennoch bei Stromerzeugung, Fahrzeugbau und Batterieproduktion.",
+      "Die Herstellung der Batterie benötigt Energie und Rohstoffe. Dieser zusätzliche Produktionsaufwand kann sich über die Nutzungsdauer durch den effizienteren Antrieb ausgleichen.",
+      "Wie schnell das geschieht, hängt vom Strommix, der Fahrzeuggrösse und den gefahrenen Kilometern ab. Ein kleines Elektroauto benötigt in der Regel weniger Ressourcen als ein grosser elektrischer SUV.",
+      "Auch Elektroautos beanspruchen Strassenraum und verursachen Reifenabrieb. Sie lösen deshalb nicht alle Verkehrsprobleme.",
+      "Am stärksten ist eine Kombination aus weniger Fahrten, geteilten Fahrzeugen, ÖV, Velo und einem passend dimensionierten Elektroauto. Der Antriebswechsel ist ein wichtiger Baustein, aber nicht die einzige Lösung.",
+    ],
+    fact: "E-Autos sind über den Lebenszyklus meist klimafreundlicher als Verbrenner, aber nicht emissionsfrei. Fahrzeuggrösse, Strommix und Nutzung bleiben entscheidend.",
     action: "Vermeiden und teilen schlägt häufig nur den Antrieb zu wechseln.",
   },
   {
     id: "plant-food",
     title: "Pflanzen auf dem Teller",
     category: "Ernährung",
-    minutes: 2,
+    minutes: 6,
     xp: 10,
     icon: "🌱",
-    intro: "Mehr pflanzliche Mahlzeiten sind ein gut dosierbarer Alltagshebel.",
-    fact: "Besonders bei Rindfleisch entstehen entlang der Produktion hohe Emissionen.",
+    body: [
+      "Lebensmittel verursachen Emissionen beim Anbau, bei der Tierhaltung, Verarbeitung, Kühlung und beim Transport. Bei tierischen Produkten kommt zusätzlich die Produktion des Futters hinzu.",
+      "Wiederkäuer wie Rinder stossen bei der Verdauung Methan aus. Deshalb kann Rindfleisch eine deutlich höhere Klimawirkung haben als viele pflanzliche Proteinquellen.",
+      "Eine pflanzliche Mahlzeit muss nicht kompliziert oder vollkommen neu sein. Viele vertraute Gerichte lassen sich mit Hülsenfrüchten, Gemüse, Tofu oder Getreide zubereiten.",
+      "Regionalität allein entscheidet nicht über die gesamte Bilanz. Produktionsweise und Lebensmittelart wiegen häufig stärker als die reine Transportdistanz.",
+      "Ein schrittweiser Wechsel ist oft leichter dauerhaft durchzuhalten als ein strikter Alles-oder-nichts-Ansatz. Schon regelmässig ersetzte Mahlzeiten können über ein Jahr eine relevante Veränderung ergeben.",
+    ],
+    fact: "Mehr pflanzliche Mahlzeiten senken häufig die ernährungsbedingte Klimawirkung. Besonders der Ersatz von Rindfleisch bietet einen grossen Hebel.",
     action: "Tausche zuerst eine Mahlzeit aus, die dir leichtfällt.",
   },
   {
     id: "food-waste",
     title: "Die Wirkung von Resten",
     category: "Ernährung",
-    minutes: 2,
+    minutes: 5,
     xp: 10,
     icon: "🥕",
-    intro: "Weggeworfene Lebensmittel tragen die gesamte Wirkung von Anbau, Transport und Kühlung.",
-    fact: "Planung, richtige Lagerung und kreative Resteküche vermeiden diese Wirkung.",
+    body: [
+      "Wenn Lebensmittel weggeworfen werden, gehen auch alle Ressourcen ihrer Herstellung verloren. Dazu zählen Boden, Wasser, Energie, Dünger, Verpackung und Transport.",
+      "Bei gekühlten oder verarbeiteten Produkten kommt weiterer Energieaufwand hinzu. Tierische Produkte tragen häufig eine besonders hohe Wirkung, wenn sie ungenutzt entsorgt werden.",
+      "Ein Mindesthaltbarkeitsdatum bedeutet nicht automatisch, dass ein Produkt danach verdorben ist. Aussehen, Geruch und Geschmack helfen bei vielen Lebensmitteln besser bei der Beurteilung.",
+      "Eine kurze Vorratskontrolle vor dem Einkauf verhindert Doppelkäufe. Gut sichtbare Reste im Kühlschrank werden eher rechtzeitig verwendet.",
+      "Portionen lassen sich anpassen, einfrieren oder am nächsten Tag neu kombinieren. Resteküche spart dadurch gleichzeitig Emissionen, Geld und Einkaufszeit.",
+    ],
+    fact: "Food Waste verschwendet die gesamte Wirkung, die bis zum Wegwerfen bereits entstanden ist. Planung, Lagerung und Resteküche vermeiden diese unnötigen Emissionen.",
     action: "Plane vor dem nächsten Einkauf eine Restemahlzeit.",
   },
   {
     id: "heating",
     title: "Wärme bewusst nutzen",
     category: "Wohnen",
-    minutes: 3,
+    minutes: 6,
     xp: 10,
     icon: "🏡",
-    intro: "Raumwärme ist in vielen Haushalten der grösste Energieposten.",
-    fact: "Gebäudezustand und Heizsystem bestimmen, wie gross der persönliche Spielraum ist.",
+    body: [
+      "Raumwärme benötigt in vielen Haushalten mehr Energie als Licht oder Haushaltsgeräte. Der Bedarf hängt stark von Gebäudehülle, Wohnfläche, Wetter und gewünschter Temperatur ab.",
+      "Öl- und Gasheizungen verursachen beim Verbrennen fossiler Energieträger direkte Emissionen. Wärmepumpen nutzen Umweltwärme und können mit sauberem Strom deutlich klimafreundlicher arbeiten.",
+      "Mieterinnen und Mieter können das Heizsystem meist nicht selbst austauschen. Sie können dennoch Temperatur, Lüftung und Heizzeiten beeinflussen.",
+      "Stosslüften tauscht Luft schnell aus, ohne Wände und Möbel stark auszukühlen. Dauerhaft gekippte Fenster können dagegen unnötig viel Wärme verlieren.",
+      "Eine kleine Temperaturanpassung kann den Energiebedarf reduzieren, darf aber Gesundheit und Wohnkomfort nicht beeinträchtigen. Langfristig sind gute Dämmung und erneuerbare Heizsysteme die grössten Gebäudehebel.",
+    ],
+    fact: "Heizsystem und Gebäudezustand bestimmen den grössten Teil der Wohnemissionen. Im Alltag helfen bedarfsgerechtes Heizen und kurzes, kräftiges Lüften.",
     action: "Teste eine kleine Anpassung, ohne Komfort und Gesundheit zu opfern.",
   },
   {
     id: "consumption",
     title: "Das längste Produktleben",
     category: "Konsum",
-    minutes: 2,
+    minutes: 6,
     xp: 10,
     icon: "🧵",
-    intro: "Herstellung fällt oft stärker ins Gewicht als die tägliche Nutzung.",
-    fact: "Länger nutzen, reparieren, leihen und gebraucht kaufen senkt den Bedarf an Neuware.",
+    body: [
+      "Viele Produkte verursachen einen grossen Teil ihrer Klimawirkung schon vor dem ersten Gebrauch. Rohstoffabbau, Verarbeitung, Fabrikation und Transport gehören zu dieser sogenannten grauen Energie.",
+      "Elektronik benötigt zusätzlich seltene Metalle und aufwendige Produktionsschritte. Bei Kleidung spielen Fasern, Färbung, Verarbeitung und häufige Kollektionen eine wichtige Rolle.",
+      "Je länger ein funktionsfähiges Produkt genutzt wird, desto länger verteilt sich seine Herstellungswirkung. Ein Neukauf ist deshalb nicht automatisch besser, nur weil das neue Modell effizienter ist.",
+      "Reparieren, gebraucht kaufen, leihen und teilen vermeiden oder verzögern neue Produktion. Wichtig ist zugleich, Gegenstände auszuwählen, die tatsächlich gebraucht und lange verwendet werden.",
+      "Eine Wunschliste mit Wartezeit hilft, spontane Käufe von echten Bedürfnissen zu unterscheiden. Bewusster Konsum bedeutet nicht Verzicht auf alles, sondern mehr Nutzen aus jedem Produkt zu holen.",
+    ],
+    fact: "Die Herstellung prägt die Klimawirkung vieler Produkte stark. Längere Nutzung, Reparatur und Secondhand reduzieren den Bedarf an neuer Produktion.",
     action: "Wähle einen Gegenstand, den du dieses Jahr länger nutzen möchtest.",
   },
 ];
@@ -503,7 +554,17 @@ export function calculateBaseline(answers: Record<string, string>): BaselineResu
 
   const homeMid =
     (answers.home === "house" ? 2.35 : answers.home === "house-shared" ? 1.55 : answers.home === "flat-large" ? 1.45 : 1.05) *
-    (answers.heating === "gas" ? 1.25 : answers.heating === "heatpump" ? 0.68 : answers.heating === "district" ? 0.85 : 1);
+    (answers.heating === "oil"
+      ? 1.35
+      : answers.heating === "gas"
+        ? 1.2
+        : answers.heating === "heatpump"
+          ? 0.68
+          : answers.heating === "district"
+            ? 0.85
+            : answers.heating === "other"
+              ? 0.9
+              : 1);
 
   const consumptionMid = answers.motivation === "consumption" ? 1.45 : 1.7;
 

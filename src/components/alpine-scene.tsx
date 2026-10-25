@@ -1,4 +1,18 @@
+import Image from "next/image";
 import { cn } from "@/lib/utils";
+
+const levelNames = [
+  "Erste Lichtung",
+  "Klares Wasser",
+  "Neue Quellen",
+  "Blühende Ufer",
+  "Lebendige Wälder",
+  "Vielfältiges Tal",
+];
+
+export function getPlanetLevelName(level: number) {
+  return levelNames[Math.max(0, Math.min(levelNames.length - 1, level - 1))];
+}
 
 export function AlpineScene({
   level = 3,
@@ -9,87 +23,108 @@ export function AlpineScene({
   compact?: boolean;
   className?: string;
 }) {
-  const lush = Math.min(1, level / 6);
+  const safeLevel = Math.max(1, Math.min(6, level));
+  const filters = [
+    "saturate(.55) brightness(.82) contrast(.92)",
+    "saturate(.72) brightness(.9) contrast(.96)",
+    "saturate(.88) brightness(.96)",
+    "saturate(1.02) brightness(1)",
+    "saturate(1.12) brightness(1.03)",
+    "saturate(1.2) brightness(1.06) contrast(1.02)",
+  ];
 
   return (
     <div
       className={cn(
         "paper-grain relative isolate overflow-hidden bg-[#d9edf0]",
-        compact ? "h-32 rounded-[1.5rem]" : "h-[25rem] rounded-b-[2.25rem]",
+        compact ? "h-36 rounded-[1.5rem]" : "h-[28rem] rounded-b-[2.25rem]",
         className,
       )}
-      aria-label={`Alpine Landschaft auf Entwicklungsstufe ${level}`}
+      aria-label={`Alpine Landschaft auf Entwicklungsstufe ${safeLevel}`}
     >
-      <div className="absolute inset-x-0 top-0 h-1/2 bg-[linear-gradient(#c7e9f0,#eef4dc)]" />
-      <div className="absolute left-8 top-10 h-2 w-12 rounded-full bg-white/70 blur-[1px]" />
-      <div className="absolute right-10 top-16 h-1.5 w-8 rounded-full bg-white/65" />
-      <svg
-        viewBox="0 0 430 420"
-        className="absolute inset-x-0 bottom-0 h-[88%] w-full"
-        preserveAspectRatio="xMidYMax slice"
-        aria-hidden="true"
-      >
-        <defs>
-          <linearGradient id="mountainBack" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stopColor="#cbd9cf" />
-            <stop offset="1" stopColor="#8eaa98" />
-          </linearGradient>
-          <linearGradient id="mountainFront" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stopColor="#a8c0a8" />
-            <stop offset="1" stopColor="#47785b" />
-          </linearGradient>
-          <linearGradient id="water" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stopColor="#8dd4db" />
-            <stop offset="1" stopColor="#3e9ca6" />
-          </linearGradient>
-        </defs>
-        <path d="M-20 246 100 96l48 61 65-97 116 149 49-63 82 106v88H-20z" fill="url(#mountainBack)" />
-        <path d="m100 96 18 53 30 8-48 4-32 36zM213 60l30 70 32 28-61-18-48 35z" fill="#eef5ed" opacity=".9" />
-        <path d="M-20 271 73 180l69 76 72-112 92 118 66-82 88 103v76H-20z" fill="url(#mountainFront)" />
-        <path d="M-20 279c74-23 117-11 174 17 57 29 124 2 175-12 51-13 84 0 131 25v111H-20z" fill="#5f994d" />
-        <path d="M121 420c30-58 99-70 91-142-5-40 33-55 57-67-15 29-19 53 2 77 36 43 1 91-14 132z" fill="url(#water)" />
-        <path d="M140 420c27-59 78-77 76-132M209 302c18 22 34 35 46 51" fill="none" stroke="#d7f4ef" strokeWidth="5" opacity=".65" />
-        {lush > 0.25 && (
-          <g fill="#245d36">
-            <path d="m35 292 18-56 18 56zM57 306l20-67 22 67zM328 300l19-62 21 62zM365 319l20-70 22 70z" />
-          </g>
-        )}
-        {lush > 0.55 && (
-          <g fill="#347943">
-            <path d="m15 332 17-53 18 53zM91 327l18-59 19 59zM298 336l17-54 18 54zM397 348l14-48 16 48z" />
-          </g>
-        )}
-        {lush > 0.8 && (
-          <g fill="#f2d56f">
-            <circle cx="76" cy="350" r="3" />
-            <circle cx="105" cy="372" r="3" />
-            <circle cx="320" cy="365" r="3" />
-            <circle cx="358" cy="344" r="3" />
-          </g>
-        )}
-      </svg>
+      <Image
+        src="/images/carboncrush-valley.webp"
+        alt=""
+        fill
+        priority={!compact}
+        sizes={compact ? "390px" : "430px"}
+        className="object-cover transition-[filter,transform] duration-700"
+        style={{
+          filter: filters[safeLevel - 1],
+          transform: `scale(${1.1 - safeLevel * 0.012})`,
+        }}
+      />
+
+      {safeLevel === 1 && <div className="absolute inset-0 bg-[#243b32]/20" />}
+      {safeLevel >= 2 && (
+        <div className="absolute inset-x-0 bottom-[13%] h-[18%] bg-[linear-gradient(transparent,rgba(93,199,220,.18),transparent)] mix-blend-screen" />
+      )}
+      {safeLevel >= 3 && (
+        <>
+          <Tree className="left-[6%] bottom-[8%] scale-90" />
+          <Tree className="right-[7%] bottom-[12%] scale-75" />
+        </>
+      )}
+      {safeLevel >= 4 && (
+        <div className="absolute inset-x-[8%] bottom-[6%] flex justify-around text-[10px] drop-shadow-sm">
+          <span>🌼</span><span>🌿</span><span>🌻</span><span>🌱</span><span>🌼</span>
+        </div>
+      )}
+      {safeLevel >= 5 && (
+        <>
+          <Bird className="left-[23%] top-[18%]" />
+          <Bird className="right-[20%] top-[23%] scale-75" />
+          <div className="absolute right-[9%] top-[9%] size-14 rounded-full bg-[#fff5bd]/75 blur-[1px] shadow-[0_0_45px_18px_rgba(255,243,172,.32)]" />
+        </>
+      )}
+      {safeLevel >= 6 && (
+        <>
+          <span className="absolute bottom-[23%] left-[18%] text-sm drop-shadow">🦋</span>
+          <span className="absolute bottom-[29%] right-[25%] text-sm drop-shadow">🦌</span>
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_44%,rgba(255,255,255,.14),transparent_32%)]" />
+        </>
+      )}
+
       {!compact && (
-        <div className="absolute left-1/2 top-7 -translate-x-1/2 rounded-full border border-white/70 bg-white/80 px-4 py-2 text-xs font-bold tracking-wide text-[#28573a] shadow-sm backdrop-blur">
-          🌿 Level {level} — {level >= 5 ? "Lebendige Täler" : "Neue Quellen"}
+        <div className="absolute left-1/2 top-7 -translate-x-1/2 whitespace-nowrap rounded-full border border-white/70 bg-white/85 px-4 py-2 text-xs font-bold tracking-wide text-[#28573a] shadow-sm backdrop-blur">
+          🌿 Level {safeLevel} — {getPlanetLevelName(safeLevel)}
         </div>
       )}
     </div>
   );
 }
 
+function Tree({ className }: { className?: string }) {
+  return (
+    <div className={cn("absolute h-20 w-12 drop-shadow-md", className)} aria-hidden="true">
+      <div className="absolute bottom-0 left-1/2 h-8 w-1.5 -translate-x-1/2 rounded-full bg-[#765339]" />
+      <div className="absolute bottom-4 left-1/2 size-10 -translate-x-1/2 rounded-[55%_55%_48%_48%] bg-[#2f7040]" />
+      <div className="absolute bottom-9 left-1/2 size-8 -translate-x-1/2 rounded-[55%_55%_48%_48%] bg-[#3f8548]" />
+    </div>
+  );
+}
+
+function Bird({ className }: { className?: string }) {
+  return (
+    <span
+      aria-hidden="true"
+      className={cn("absolute h-3 w-8 before:absolute before:left-0 before:top-0 before:h-2 before:w-4 before:rotate-12 before:rounded-[100%_0] before:border-t-2 before:border-[#334d48] after:absolute after:right-0 after:top-0 after:h-2 after:w-4 after:-rotate-12 after:rounded-[0_100%] after:border-t-2 after:border-[#334d48]", className)}
+    />
+  );
+}
+
 export function WelcomeGlobe() {
   return (
     <div className="relative mx-auto h-64 w-64">
-      <div className="pulse-soft absolute inset-5 rounded-full bg-[#b5dbe2] shadow-[0_30px_70px_rgba(27,75,53,.24)]" />
-      <div className="paper-grain absolute inset-5 overflow-hidden rounded-full border-[10px] border-white/65 bg-[linear-gradient(155deg,#9edbe8,#438ba7)]">
-        <div className="absolute -left-5 top-12 h-24 w-28 rotate-12 rounded-[42%] bg-[#70ad54]" />
-        <div className="absolute right-1 top-4 h-36 w-24 -rotate-12 rounded-[48%] bg-[#4f964b]" />
-        <div className="absolute bottom-5 right-14 h-16 w-20 rounded-[45%] bg-[#70af53]" />
-        <div className="absolute left-12 top-8 h-10 w-16 rotate-12 rounded-full bg-white/25 blur-md" />
-      </div>
-      <div className="absolute bottom-7 left-0 h-10 w-24 rounded-full bg-white/90 blur-[1px]" />
-      <div className="absolute bottom-4 right-0 h-12 w-28 rounded-full bg-white/90 blur-[1px]" />
-      <span className="absolute right-7 top-2 text-3xl">🌱</span>
+      <div className="pulse-soft absolute inset-3 rounded-full bg-white shadow-[0_30px_70px_rgba(27,75,53,.2)]" />
+      <Image
+        src="/images/carboncrush-earth.webp"
+        alt="Die Erde mit Blick auf Europa und Afrika"
+        fill
+        priority
+        sizes="256px"
+        className="object-contain"
+      />
     </div>
   );
 }

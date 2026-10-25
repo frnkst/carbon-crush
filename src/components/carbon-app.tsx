@@ -29,7 +29,7 @@ import {
   X,
   Zap,
 } from "lucide-react";
-import { AlpineScene, WelcomeGlobe } from "@/components/alpine-scene";
+import { AlpineScene, getPlanetLevelName, WelcomeGlobe } from "@/components/alpine-scene";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -88,6 +88,7 @@ export function CarbonApp() {
   const [questionIndex, setQuestionIndex] = useState(0);
   const [draftAnswers, setDraftAnswers] = useState<Record<string, string>>({});
   const [selectedChallenge, setSelectedChallenge] = useState<Challenge>(challenges[0]);
+  const [challengeFilter, setChallengeFilter] = useState<"Alle" | Category>("Alle");
   const [selectedLesson, setSelectedLesson] = useState(lessons[0]);
   const [successTitle, setSuccessTitle] = useState("Stark gemacht!");
 
@@ -197,6 +198,7 @@ export function CarbonApp() {
           <HomeScreen
             state={state}
             onChallenge={(challenge) => {
+              setChallengeFilter(challenge.category);
               setSelectedChallenge(challenge);
               navigate("challenge");
             }}
@@ -207,7 +209,10 @@ export function CarbonApp() {
         return (
           <ChallengesScreen
             state={state}
+            filter={challengeFilter}
+            onFilter={setChallengeFilter}
             onChallenge={(challenge) => {
+              setChallengeFilter(challenge.category);
               setSelectedChallenge(challenge);
               navigate("challenge");
             }}
@@ -360,14 +365,14 @@ function Welcome({
         <span className="rounded-full bg-secondary px-3 py-1.5 text-xs font-bold text-secondary-foreground">Prototyp</span>
       </div>
       <div className="relative mt-14">
-        <p className="rise text-xs font-bold uppercase tracking-[.22em] text-primary">Dein Beitrag zählt</p>
+        <p className="rise font-display text-xl font-semibold text-primary">Dein Beitrag zählt</p>
         <h1 className="rise rise-delay-1 mt-3 max-w-[340px] font-display text-[3.15rem] font-semibold leading-[.96] tracking-[-.045em] text-[#183125]">
           Kleine Schritte.
           <br />
           Spürbare Wirkung.
         </h1>
         <p className="rise rise-delay-2 mt-5 max-w-[310px] text-[15px] leading-6 text-muted-foreground">
-          Entdecke deine grössten Klimahebel und lass deine persönliche Welt mit jeder guten Gewohnheit aufblühen.
+          Finde heraus, wo du den grössten Unterschied machen kannst – und verändere Schritt für Schritt deinen persönlichen Klima-Impact.
         </p>
       </div>
       <div className="rise rise-delay-3 my-auto py-5">
@@ -575,13 +580,43 @@ function Baseline({ state, onContinue }: { state: ReturnType<typeof useCarbonSta
         <Accordion className="mt-5 rounded-2xl border bg-[#fafbf6] px-4">
           <AccordionItem value="method">
             <AccordionTrigger className="text-sm font-bold">Wie berechnen wir das?</AccordionTrigger>
-            <AccordionContent className="space-y-2 text-xs leading-5 text-muted-foreground">
-              <p>
-                Die Schätzung basiert auf deinen Angaben, plausiblen Demo-Faktoren und dem {baseline.model}. Die Genauigkeit ist aktuell <strong>mittel</strong>.
-              </p>
-              <p>
-                Nicht individuell erfasste gesellschaftliche Emissionen werden nicht als erfundene Restzahl ergänzt.
-              </p>
+            <AccordionContent className="space-y-5 pb-4 text-xs leading-5 text-muted-foreground">
+              <MethodSection title="Wie berechnen wir deinen CO₂-Fussabdruck?">
+                <strong className="text-foreground">Deine Angaben bilden die Grundlage</strong>
+                <span>
+                  Dein geschätzter CO₂-Fussabdruck basiert auf den Angaben, die du im Klima-Check gemacht hast. Dazu gehören deine Mobilität, Ernährung, Wohnsituation und dein Konsumverhalten.
+                </span>
+              </MethodSection>
+              <MethodSection title="So entsteht die Schätzung">
+                <span>
+                  Wir kombinieren deine Angaben mit geschätzten Emissionswerten für verschiedene Aktivitäten und Lebensbereiche. Diese Werte beschreiben, wie viele Treibhausgase beispielsweise durch Autofahrten, Flugreisen, Heizen oder die Herstellung von Lebensmitteln entstehen können.
+                </span>
+                <span>
+                  Die Ergebnisse werden in CO₂-Äquivalenten (CO₂e) angegeben. Damit werden verschiedene Treibhausgase in einer gemeinsamen Einheit zusammengefasst.
+                </span>
+              </MethodSection>
+              <MethodSection title="Warum zeigen wir eine Spannbreite?">
+                <span>
+                  Nicht alle Emissionen lassen sich genau bestimmen. Sie hängen beispielsweise vom Fahrzeug, vom Energieverbrauch oder von individuellen Konsumgewohnheiten ab.
+                </span>
+                <span>Deshalb zeigen wir dir eine geschätzte Spannbreite statt einer scheinbar exakten Zahl.</span>
+              </MethodSection>
+              <MethodSection title="Was ist nicht enthalten?">
+                <span>
+                  Dein persönlicher Fussabdruck bildet derzeit nicht sämtliche Emissionen ab. Beispielsweise werden Emissionen aus öffentlichen Dienstleistungen und Infrastruktur nicht vollständig individuell erfasst.
+                </span>
+                <span>
+                  Wir verzichten bewusst darauf, solche nicht erfassten Emissionen pauschal als zusätzliche Zahl einzurechnen.
+                </span>
+              </MethodSection>
+              <MethodSection title="Wie zuverlässig ist das Ergebnis?">
+                <span>
+                  Die aktuelle Berechnung ist eine erste Orientierung und keine vollständige wissenschaftliche CO₂-Bilanz. Sie verwendet teilweise vereinfachte Annahmen und vorläufige Emissionsfaktoren.
+                </span>
+                <span>
+                  Sie hilft dir vor allem dabei, deine grössten möglichen Klimahebel zu erkennen und Veränderungen über die Zeit sichtbar zu machen.
+                </span>
+              </MethodSection>
             </AccordionContent>
           </AccordionItem>
         </Accordion>
@@ -677,7 +712,7 @@ function HomeScreen({
           <div className="flex items-center gap-4 p-4">
             <div className="flex-1">
               <p className="text-xs font-bold uppercase tracking-[.14em] text-primary">Deine Welt · Level {level}</p>
-              <p className="mt-1 font-display text-xl font-semibold">{level >= 5 ? "Lebendige Täler" : "Neue Quellen"}</p>
+              <p className="mt-1 font-display text-xl font-semibold">{getPlanetLevelName(level)}</p>
             </div>
             <ChevronRight className="size-5 text-muted-foreground" />
           </div>
@@ -689,12 +724,15 @@ function HomeScreen({
 
 function ChallengesScreen({
   state,
+  filter,
+  onFilter,
   onChallenge,
 }: {
   state: ReturnType<typeof useCarbonState>["state"];
+  filter: "Alle" | Category;
+  onFilter: (filter: "Alle" | Category) => void;
   onChallenge: (challenge: Challenge) => void;
 }) {
-  const [filter, setFilter] = useState<"Alle" | Category>("Alle");
   const filters: ("Alle" | Category)[] = ["Alle", "Mobilität", "Flüge", "Ernährung", "Wohnen", "Konsum"];
   const visible = filter === "Alle" ? challenges : challenges.filter((item) => item.category === filter);
 
@@ -724,7 +762,7 @@ function ChallengesScreen({
             size="sm"
             variant={filter === item ? "default" : "outline"}
             className="h-9 shrink-0 rounded-full px-4"
-            onClick={() => setFilter(item)}
+            onClick={() => onFilter(item)}
           >
             {item}
           </Button>
@@ -947,6 +985,15 @@ function PlanetScreen({ state }: { state: ReturnType<typeof useCarbonState>["sta
   const level = getLevel(state.xp);
   const levelStart = (level - 1) * 300;
   const progress = ((state.xp - levelStart) / 300) * 100;
+  const nextLevel = Math.min(6, level + 1);
+  const unlockedDetails = [
+    ["🌤️ Lichtung"],
+    ["🌤️ Lichtung", "💧 Fluss"],
+    ["🌤️ Lichtung", "💧 Fluss", "🌲 Bäume"],
+    ["💧 Fluss", "🌲 Bäume", "🌼 Blumen"],
+    ["🌲 Wald", "🌼 Blumen", "🐦 Vögel"],
+    ["🌼 Blumen", "🐦 Vögel", "🦋 Artenvielfalt"],
+  ][level - 1];
 
   return (
     <section className="min-h-[100dvh] bg-[#f8fbf6]">
@@ -956,7 +1003,7 @@ function PlanetScreen({ state }: { state: ReturnType<typeof useCarbonState>["sta
           <div className="flex items-end justify-between">
             <div>
               <p className="text-[11px] font-bold uppercase tracking-[.15em] text-primary">Meine Welt</p>
-              <h1 className="mt-1 font-display text-2xl font-semibold">Level {level} · Neue Quellen</h1>
+              <h1 className="mt-1 font-display text-2xl font-semibold">Level {level} · {getPlanetLevelName(level)}</h1>
             </div>
             <span className="text-xs font-bold text-muted-foreground">{state.xp - levelStart} / 300 XP</span>
           </div>
@@ -969,16 +1016,20 @@ function PlanetScreen({ state }: { state: ReturnType<typeof useCarbonState>["sta
         </p>
         <SectionHeading label="Nächste Entwicklung" />
         <Card className="flex items-center gap-4 rounded-2xl p-4">
-          <span className="grid size-12 place-items-center rounded-2xl bg-secondary text-2xl">🌲</span>
+          <span className="grid size-12 place-items-center rounded-2xl bg-secondary text-2xl">
+            {level === 1 ? "💧" : level === 2 ? "🌲" : level === 3 ? "🌼" : level === 4 ? "🐦" : "🦋"}
+          </span>
           <div className="flex-1">
-            <p className="font-bold">Ein kleiner Wald entsteht</p>
-            <p className="mt-1 text-xs text-muted-foreground">Noch {Math.max(0, 300 - (state.xp - levelStart))} XP bis zur nächsten Entwicklung</p>
+            <p className="font-bold">{level === 6 ? "Dein Tal ist vollständig belebt" : getPlanetLevelName(nextLevel)}</p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              {level === 6 ? "Du hast alle Landschaftsdetails freigeschaltet." : `Noch ${Math.max(0, 300 - (state.xp - levelStart))} XP bis zur nächsten Entwicklung`}
+            </p>
           </div>
-          <LockKeyhole className="size-4 text-muted-foreground" />
+          {level < 6 && <LockKeyhole className="size-4 text-muted-foreground" />}
         </Card>
         <SectionHeading label="Bereits gewachsen" />
         <div className="grid grid-cols-3 gap-3">
-          {["💧 Quelle", "🌿 Wiese", "🪨 Ufer"].map((item) => (
+          {unlockedDetails.map((item) => (
             <div key={item} className="rounded-2xl border bg-white p-3 text-center text-xs font-bold">
               <span className="mb-2 block text-2xl">{item.split(" ")[0]}</span>
               {item.split(" ")[1]}
@@ -1125,7 +1176,9 @@ function LessonDetail({
       <div className="mt-10">
         <p className="text-xs font-bold uppercase tracking-[.18em] text-[#8a6928]">{lesson.category}</p>
         <h1 className="mt-2 font-display text-[2.7rem] font-semibold leading-[1.03]">{lesson.title}</h1>
-        <p className="mt-5 text-base leading-7 text-muted-foreground">{lesson.intro}</p>
+        <div className="mt-5 space-y-4 text-[15px] leading-7 text-muted-foreground">
+          {lesson.body.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+        </div>
       </div>
       <Card className="mt-6 rounded-2xl border-[#e9dfbf] bg-[#fbf7e9] p-5">
         <p className="text-xs font-bold uppercase tracking-[.14em] text-[#896720]">Gut zu wissen</p>
@@ -1135,7 +1188,7 @@ function LessonDetail({
         <Sparkles className="mt-0.5 size-5 shrink-0 text-primary" />
         <p className="text-sm leading-6"><strong>Dein nächster Schritt:</strong> {lesson.action}</p>
       </div>
-      <Button onClick={onComplete} className="mt-auto h-14 rounded-2xl text-base font-bold">
+      <Button onClick={onComplete} className="mt-8 h-14 rounded-2xl text-base font-bold">
         {completed ? "Zurück zur Übersicht" : `Bite abschliessen · +${lesson.xp} XP`}
       </Button>
     </section>
@@ -1260,6 +1313,15 @@ function SectionHeading({ label, action, onAction }: { label: string; action?: s
           {action} <ChevronRight className="inline size-3.5" />
         </button>
       )}
+    </div>
+  );
+}
+
+function MethodSection({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div className="flex flex-col gap-2">
+      <strong className="text-sm text-foreground">{title}</strong>
+      {children}
     </div>
   );
 }

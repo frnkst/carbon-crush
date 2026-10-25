@@ -116,14 +116,13 @@ function Bird({ className }: { className?: string }) {
 export function WelcomeGlobe() {
   return (
     <div className="relative mx-auto h-64 w-64">
-      <div className="pulse-soft absolute inset-3 rounded-full bg-white shadow-[0_30px_70px_rgba(27,75,53,.2)]" />
       <Image
-        src="/images/carboncrush-earth.webp"
+        src="/images/carboncrush-earth-transparent.webp"
         alt="Die Erde mit Blick auf Europa und Afrika"
         fill
         priority
         sizes="256px"
-        className="object-contain"
+        className="pulse-soft object-contain drop-shadow-[0_24px_28px_rgba(27,75,53,.2)]"
       />
     </div>
   );
